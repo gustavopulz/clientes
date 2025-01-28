@@ -6,6 +6,9 @@ Instalar as dependencias do prisma no backend:
 - npm install @prisma/client
 - npx prisma init
 
+# Em caso de falhas com generate: 
+- npx prisma generate
+
 # alterar o código do arquivo schema.prisma para:
     generator client {
     provider = "prisma-client-js"
