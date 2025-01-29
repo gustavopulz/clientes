@@ -12,24 +12,26 @@ Instalar as dependencias do prisma:
 
 # Alterar o código do arquivo schema.prisma para:
     generator client {
-    provider = "prisma-client-js"
+        provider = "prisma-client-js"
     }
 
     datasource db {
-    provider = "mongodb"
-    url      = env("DATABASE_URL")
+        provider = "mongodb"
+        url      = env("DATABASE_URL")
     }
 
     model Customer {
-    id         String    @id @default(auto()) @map("_id") @db.ObjectId
-    name       String
-    email      String
-    status     Boolean
-    create_at  DateTime? @default(now())
-    updated_at DateTime? @default(now())
+        id         String    @id @default(auto()) @map("_id") @db.ObjectId
+        name       String
+        email      String
+        password   String
+        status     Boolean
+        create_at  DateTime? @default(now())
+        updated_at DateTime? @default(now())
 
-    @@map("customers")
+        @@map("customers")
     }
+
 
 # Em caso de falhas com generate: 
 1° Faça a alteração do código do schema.prisma.
