@@ -13,6 +13,9 @@ class DeleteCustomerService {
         const findCustomer = await prismaClient.customer.findFirst({
             where: {
                 id: id
+            },
+            select: {
+                id: true
             }
         })
 

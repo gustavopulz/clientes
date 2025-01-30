@@ -40,7 +40,9 @@ class CreateCustomerService {
                 name,
                 email,
                 password: hashedPassword,
-                status: true
+                status: true,
+                create_at: new Date(),
+                updated_at: new Date()
             }
         });
 
