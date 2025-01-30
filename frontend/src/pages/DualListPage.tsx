@@ -57,7 +57,7 @@ const DualListPage: React.FC = () => {
                         onChange={(e) => setInputValue(e.target.value)}
                         className="w-full p-2 mb-4 border rounded color-white bg-white"
                         placeholder="Adicionar item..." />
-                    <button onClick={handleAddItem} className="w-full p-2 bg-green-500 text-white rounded mb-4">Adicionar</button>
+                    <button onClick={handleAddItem} className="cursor-pointer w-full p-2 bg-green-500 text-white rounded mb-4">Adicionar</button>
                 </div>
 
                 <div className="flex w-full max-w-4xl justify-between">
