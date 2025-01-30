@@ -76,7 +76,9 @@ const RegisterPage: React.FC = () => {
             setSuccess('Usuário registrado com sucesso!');
         } catch (err) {
             if (axios.isAxiosError(err)) {
-                if (err.response?.data?.message === "Usuário já existe" || err.response?.data?.message === "Email já cadastrado") {
+                if (err.response?.status === 400) {
+                    setGeneralError('Requisição inválida. Verifique os dados e tente novamente.');
+                } else if (err.response?.data?.message === "Usuário já existe" || err.response?.data?.message === "Email já cadastrado") {
                     setGeneralError('Já existe um cadastro com este usuário e/ou e-mail.');
                 } else {
                     setGeneralError(err.response?.data?.message || 'Erro desconhecido.');
