@@ -21,6 +21,6 @@ export class LoginController {
             return reply.status(401).send({ error: "Password" });
         }
 
-        return reply.send({ token: "fake-jwt-token" });
+        return reply.send({ token: "fake-jwt-token", role: customer.role });
     }
 }

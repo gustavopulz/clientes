@@ -1,8 +1,9 @@
 import React, { useState, useRef, FormEvent, useEffect } from 'react';
 import axios from 'axios';
-import { FiTrash } from 'react-icons/fi';
+import { FiTrash, FiX, FiPlus } from 'react-icons/fi';
 import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
 
 interface CustomerProps {
     id: string;
@@ -21,6 +22,8 @@ const RegisterPage: React.FC = () => {
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [generalError, setGeneralError] = useState('');
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const nameRef = useRef<HTMLInputElement | null>(null);
     const emailRef = useRef<HTMLInputElement | null>(null);
     const passwordRef = useRef<HTMLInputElement | null>(null);
@@ -32,6 +35,8 @@ const RegisterPage: React.FC = () => {
         if (!token) {
             navigate('/login');
         } else {
+            const userRole = localStorage.getItem('role');
+            setUserRole(userRole);
             loadCustomers();
         }
     }, []);
@@ -83,9 +88,9 @@ const RegisterPage: React.FC = () => {
             if (emailRef.current) emailRef.current.value = '';
             if (passwordRef.current) passwordRef.current.value = '';
             setSuccess('Usuário registrado com sucesso!');
+            setIsModalOpen(false);
         } catch (err) {
             if (axios.isAxiosError(err)) {
-                console.log(err.response);
                 if (err.response?.data?.message === "Usuário já existe" || err.response?.data?.message === "Email já cadastrado") {
                     setGeneralError('Já existe um cadastro com este usuário e/ou e-mail.');
                 } else {
@@ -109,36 +114,64 @@ const RegisterPage: React.FC = () => {
     }
 
     return (
-        <div className="w-full min-h-screen bg-gray-900 flex justify-center px-4">
-            <main className="my-10 w-full md:max-w-2xl">
-                <h1 className="text-4xl font-medium text-white">Cadastro</h1>
-                <RegisterForm
-                    nameRef={nameRef}
-                    emailRef={emailRef}
-                    passwordRef={passwordRef}
-                    roleRef={roleRef}
-                    handleSubmit={handleSubmit}
-                    nameError={nameError}
-                    emailError={emailError}
-                    passwordError={passwordError}
-                    generalError={generalError}
-                />
-                {success && <p style={{ color: 'green' }}>{success}</p>}
-                <section className="flex flex-col">
-                    <h1 className="text-4xl font-medium text-white">Clientes</h1>
-                    {customers.map((customer) => (
-                        <article key={customer.id} className="w-full bg-white rounded p-2 mt-5 relative hover:scale-105 duration-200">
-                            <p><span className="font-medium">Nome:</span> {customer.name}</p>
-                            <p><span className="font-medium">Email:</span> {customer.email}</p>
-                            <p><span className="font-medium">Status:</span> {customer.status ? "ATIVO" : "INATIVO"}</p>
-                            <p><span className="font-medium">Role:</span> {customer.role}</p>
-                            <button onClick={() => handleDelete(customer.id)} className="bg-red-500 cursor-pointer w-7 h-7 flex items-center justify-center rounded-lg absolute -right-2 -top-2">
-                                <FiTrash size={18} color="FFF" />
-                            </button>
-                        </article>
-                    ))}
-                </section>
-            </main>
+        <div className="w-full min-h-screen bg-gray-900">
+            <Header />
+            <div className={`flex justify-center px-4 ${isModalOpen ? 'bg-opacity-60' : ''}`}>
+                <main className="my-10 w-full md:max-w-2xl relative z-10">
+                    {userRole === 'admin' && (
+                        <>
+                            <div className="flex justify-between items-center">
+                                <h1 className="text-4xl font-medium text-white">Clientes</h1>
+                                <button
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="bg-green-500 text-white p-2 rounded hover:bg-green-600 flex items-center"
+                                >
+                                    <FiPlus className="mr-2" />
+                                    Abrir Formulário de Cadastro
+                                </button>
+                            </div>
+                            {isModalOpen && (
+                                <div className="fixed inset-0 bg-opacity-60 flex items-center justify-center z-40">
+                                    <div className="bg-gray-800 bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-md z-40 relative">
+                                        <h2 className="text-2xl font-medium text-white mb-4">Cadastro</h2>
+                                        <button
+                                            onClick={() => setIsModalOpen(false)}
+                                            className="absolute top-2 right-2 cursor-pointer text-white hover:text-red-400"
+                                        >
+                                            <FiX size={24} />
+                                        </button>
+                                        <RegisterForm
+                                            nameRef={nameRef}
+                                            emailRef={emailRef}
+                                            passwordRef={passwordRef}
+                                            roleRef={roleRef}
+                                            handleSubmit={handleSubmit}
+                                            nameError={nameError}
+                                            emailError={emailError}
+                                            passwordError={passwordError}
+                                            generalError={generalError}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    )}
+                    {success && <p style={{ color: 'green' }}>{success}</p>}
+                    <section className="flex flex-col">
+                        {customers.map((customer) => (
+                            <article key={customer.id} className="w-full bg-white rounded p-2 mt-5 relative hover:scale-105 duration-200">
+                                <p><span className="font-medium">Nome:</span> {customer.name}</p>
+                                <p><span className="font-medium">Email:</span> {customer.email}</p>
+                                <p><span className="font-medium">Status:</span> {customer.status ? "ATIVO" : "INATIVO"}</p>
+                                <p><span className="font-medium">Role:</span> {customer.role}</p>
+                                <button onClick={() => handleDelete(customer.id)} className="bg-red-500 cursor-pointer w-7 h-7 flex items-center justify-center rounded-lg absolute -right-2 -top-2">
+                                    <FiTrash size={18} color="FFF" />
+                                </button>
+                            </article>
+                        ))}
+                    </section>
+                </main>
+            </div>
         </div>
     );
 };

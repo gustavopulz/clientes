@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
 import DualListPage from './pages/DualListPage';
 import DocumentsPage from './pages/DocumentsPage';
+import ViewDocumentPage from './pages/ViewDocumentPage';
 
 const App: React.FC = () => {
   return (
@@ -13,7 +14,8 @@ const App: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/dual-list" element={<DualListPage />} />
-        <Route path="/documentos" element={<DocumentsPage />} />
+        <Route path="/documents" element={<DocumentsPage />} />
+        <Route path="/view-document/:id" element={<ViewDocumentPage />} />
         <Route path="/" element={<RegisterPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

@@ -37,7 +37,10 @@ const LoginPage: React.FC = () => {
 
         try {
             const response = await axios.post('http://localhost:8080/login', { email, password });
+            console.log('Login response:', response.data); // Adicione esta linha para depuração
             localStorage.setItem('token', response.data.token);
+            localStorage.setItem('role', response.data.role); // Armazene a role correta no localStorage
+            console.log('Stored role:', response.data.role); // Adicione esta linha para depuração
             setSuccess('Login bem sucedido');
             navigate('/');
         } catch (err) {
