@@ -19,6 +19,7 @@ model Customer {
   email      String
   password   String
   status     Boolean
+  role       String
   create_at  DateTime? @default(now())
   updated_at DateTime? @default(now())
 

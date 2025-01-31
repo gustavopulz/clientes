@@ -5,11 +5,12 @@ interface CreateCustomerProps {
     name: string;
     email: string;
     password: string;
+    role: string;
 }
 
 class CreateCustomerService {
 
-    async execute({ name, email, password }: CreateCustomerProps) {
+    async execute({ name, email, password, role }: CreateCustomerProps) {
 
         if (!name || !email || !password) {
             throw new Error("Preencha todos os campos");
@@ -42,6 +43,7 @@ class CreateCustomerService {
                 password: hashedPassword,
                 status: true,
                 create_at: new Date(),
+                role: role, // use the role from the request
                 updated_at: new Date()
             }
         });
