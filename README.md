@@ -40,6 +40,7 @@ Instalar as dependencias do prisma:
 
 # Banco de dados
 Ajuste o link do seu banco de dados no .env
+JWT_SECRET="your_jwt_secret_key"
 
 # Rodando backend
 Execute:
