@@ -79,17 +79,14 @@ const RegisterPage: React.FC = () => {
             });
 
             setCustomers(allCustomers => [...allCustomers, response.data]);
-
             if (nameRef.current) nameRef.current.value = '';
             if (emailRef.current) emailRef.current.value = '';
             if (passwordRef.current) passwordRef.current.value = '';
             setSuccess('Usuário registrado com sucesso!');
         } catch (err) {
             if (axios.isAxiosError(err)) {
-                console.log(err.response); // Add this line to log the error response
-                if (err.response?.status === 400) {
-                    setGeneralError('Requisição inválida. Verifique os dados e tente novamente.');
-                } else if (err.response?.data?.message === "Usuário já existe" || err.response?.data?.message === "Email já cadastrado") {
+                console.log(err.response);
+                if (err.response?.data?.message === "Usuário já existe" || err.response?.data?.message === "Email já cadastrado") {
                     setGeneralError('Já existe um cadastro com este usuário e/ou e-mail.');
                 } else {
                     setGeneralError(err.response?.data?.message || 'Erro desconhecido.');
@@ -134,7 +131,7 @@ const RegisterPage: React.FC = () => {
                             <p><span className="font-medium">Nome:</span> {customer.name}</p>
                             <p><span className="font-medium">Email:</span> {customer.email}</p>
                             <p><span className="font-medium">Status:</span> {customer.status ? "ATIVO" : "INATIVO"}</p>
-                            <p><span className="font-medium">Role:</span> {customer.role}</p> {/* Ensure this line is present */}
+                            <p><span className="font-medium">Role:</span> {customer.role}</p>
                             <button onClick={() => handleDelete(customer.id)} className="bg-red-500 cursor-pointer w-7 h-7 flex items-center justify-center rounded-lg absolute -right-2 -top-2">
                                 <FiTrash size={18} color="FFF" />
                             </button>

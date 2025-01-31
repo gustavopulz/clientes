@@ -8,7 +8,7 @@ export class LoginController {
 
         const customer = await prismaClient.customer.findFirst({
             where: { email },
-            select: { email: true, id: true, name: true, status: true, create_at: true, updated_at: true, password: true }
+            select: { email: true, id: true, name: true, status: true, role: true, create_at: true, updated_at: true, password: true }
         });
 
         if (!customer) {

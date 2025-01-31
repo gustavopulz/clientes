@@ -8,6 +8,7 @@ class ListCustomerServices {
                 name: true,
                 email: true,
                 status: true,
+                role: true,
                 create_at: true,
                 updated_at: true,
             }
