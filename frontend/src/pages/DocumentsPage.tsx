@@ -3,6 +3,7 @@ import { FaFilePdf, FaFileContract, FaPlus, FaEye } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import axios from 'axios';
+import { FaHistory } from 'react-icons/fa';
 
 const DocumentsPage: React.FC = () => {
     const [recordsPerPage, setRecordsPerPage] = useState(10);
@@ -11,12 +12,13 @@ const DocumentsPage: React.FC = () => {
     const [documents, setDocuments] = useState([]);
     const [documentData, setDocumentData] = useState({
         name: '',
-        criticidade: 'Crítico', // Defina um valor padrão para criticidade
+        criticidade: 'Crítico',
         dataDisponibilizacao: '',
         file: null as File | null,
         accessLevel: 'all'
     });
-    const isAdmin = true; // Ajuste esta variável conforme necessário
+    const [currentPage, setCurrentPage] = useState(1);
+    const isAdmin = true;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -67,7 +69,7 @@ const DocumentsPage: React.FC = () => {
             });
             console.log('Document saved successfully');
             closeModal();
-            fetchDocuments(); // Atualize a lista de documentos após salvar
+            fetchDocuments();
         } catch (error) {
             console.error('Error saving document:', error);
             if (axios.isAxiosError(error) && error.response) {
@@ -78,6 +80,24 @@ const DocumentsPage: React.FC = () => {
 
     const handleView = (fileUrl: string) => {
         navigate(`/view-document?fileUrl=${encodeURIComponent(fileUrl)}`);
+    };
+
+    const indexOfLastRecord = currentPage * recordsPerPage;
+    const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+    const currentRecords = documents.slice(indexOfFirstRecord, indexOfLastRecord);
+
+    const totalPages = Math.ceil(documents.length / recordsPerPage);
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
     };
 
     return (
@@ -96,6 +116,10 @@ const DocumentsPage: React.FC = () => {
                     </div>
 
                     <div className="w-full border p-4 text-white rounded mb-4" style={{ borderColor: '#07223c' }}>
+                        <button className="flex items-center bg-[#043359] text-white p-2 mb-5">
+                            <FaHistory size={16} className="mr-2" />
+                            Voltar
+                        </button>
                         <div className="w-full text-center p-4 text-white rounded mb-4" style={{ background: '#07223c' }}>
                             <h2 className="text-2xl font-medium text-center">Estatística de Confirmação de Leitura de Documentos</h2>
                             <div className="flex justify-around mt-10">
@@ -122,6 +146,7 @@ const DocumentsPage: React.FC = () => {
                                 </div>
                             </div>
                         </div>
+                        <div style={{ height: "50px" }} />
                         <div className="flex justify-between items-center mb-4">
                             <div className="flex items-center">
                                 <select
@@ -164,7 +189,7 @@ const DocumentsPage: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {documents.map((document: any) => (
+                                {currentRecords.map((document: any) => (
                                     <tr key={document.id}>
                                         <td className="p-2 border" style={{ borderColor: '#1b3d5d' }}>{document.name}</td>
                                         <td className="p-2 border text-center" style={{ borderColor: '#1b3d5d', backgroundColor: document.criticidade === 'Crítico' ? 'red' : 'transparent' }}>{document.criticidade}</td>
@@ -180,6 +205,20 @@ const DocumentsPage: React.FC = () => {
                                 ))}
                             </tbody>
                         </table>
+
+                        <div className="flex justify-between items-center mt-4">
+                            <span className="text-white">
+                                Mostrando {indexOfFirstRecord + 1} até {Math.min(indexOfLastRecord, documents.length)} de {documents.length} registros
+                            </span>
+                            <div className="flex">
+                                <button onClick={handlePreviousPage} disabled={currentPage === 1} className="bg-blue-500 text-white p-2 rounded mr-2">
+                                    Anterior
+                                </button>
+                                <button onClick={handleNextPage} disabled={currentPage === totalPages} className="bg-blue-500 text-white p-2 rounded">
+                                    Próximo
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

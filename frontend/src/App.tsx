@@ -6,6 +6,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import DualListPage from './pages/DualListPage';
 import DocumentsPage from './pages/DocumentsPage';
 import ViewDocumentPage from './pages/ViewDocumentPage';
+import NotificationsPage from './pages/NotificationsPage';
 
 const App: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
         <Route path="/dual-list" element={<DualListPage />} />
         <Route path="/documents" element={<DocumentsPage />} />
         <Route path="/view-document/:id" element={<ViewDocumentPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/" element={<RegisterPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

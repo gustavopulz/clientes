@@ -4,6 +4,7 @@ import { ListCustomerController } from "./controllers/ListCustomersController";
 import { DeleteCustomerController } from "./controllers/DeleteCustomerController";
 import { LoginController } from "./controllers/LoginController";
 import documentRoutes from './routes/documentRoutes';
+import notificationRoutes from './routes/notificationRoutes';
 
 export async function routes(fastify: FastifyInstance, options: FastifyPluginOptions) {
 
@@ -28,4 +29,5 @@ export async function routes(fastify: FastifyInstance, options: FastifyPluginOpt
     });
 
     fastify.register(documentRoutes, { prefix: '/api' });
+    fastify.register(notificationRoutes, { prefix: '/api' });
 }
