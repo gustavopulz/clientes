@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { FaTrash } from 'react-icons/fa';
 
 interface ItemProps {
     id: number;
@@ -8,6 +9,7 @@ interface ItemProps {
 }
 
 const DualListPage: React.FC = () => {
+    const [configList, setConfigList] = useState<ItemProps[]>([]);
     const [list1, setList1] = useState<ItemProps[]>([]);
     const [list2, setList2] = useState<ItemProps[]>([]);
     const [inputValue, setInputValue] = useState('');
@@ -16,11 +18,11 @@ const DualListPage: React.FC = () => {
     const handleAddItem = () => {
         if (inputValue.trim()) {
             const newItem = { id: nextId.current++, text: inputValue };
-            setList1(prevList1 => {
-                if (!prevList1.some(item => item.id === newItem.id)) {
-                    return [...prevList1, newItem];
+            setConfigList(prevConfigList => {
+                if (!prevConfigList.some(item => item.id === newItem.id)) {
+                    return [...prevConfigList, newItem];
                 }
-                return prevList1;
+                return prevConfigList;
             });
             setInputValue('');
         }
@@ -28,7 +30,6 @@ const DualListPage: React.FC = () => {
 
     const moveItem = (item: ItemProps, toList: 'list1' | 'list2') => {
         if (toList === 'list1') {
-            setList2(prevList2 => prevList2.filter(i => i.id !== item.id));
             setList1(prevList1 => {
                 if (!prevList1.some(i => i.id === item.id)) {
                     return [...prevList1, item];
@@ -36,7 +37,6 @@ const DualListPage: React.FC = () => {
                 return prevList1;
             });
         } else if (toList === 'list2') {
-            setList1(prevList1 => prevList1.filter(i => i.id !== item.id));
             setList2(prevList2 => {
                 if (!prevList2.some(i => i.id === item.id)) {
                     return [...prevList2, item];
@@ -44,6 +44,11 @@ const DualListPage: React.FC = () => {
                 return prevList2;
             });
         }
+    };
+
+    const deleteItem = (item: ItemProps) => {
+        setList1(prevList1 => prevList1.filter(i => i.id !== item.id));
+        setList2(prevList2 => prevList2.filter(i => i.id !== item.id));
     };
 
     return (
@@ -60,27 +65,42 @@ const DualListPage: React.FC = () => {
                     <button onClick={handleAddItem} className="cursor-pointer w-full p-2 bg-green-500 text-white rounded mb-4">Adicionar</button>
                 </div>
 
-                <div className="flex w-full max-w-4xl justify-between">
+                <div className="flex w-full justify-center">
+                    <div className="w-225 p-4 bg-white rounded">
+                        <h2 className="text-2xl font-medium mb-4">Config</h2>
+                        <List items={configList} moveItem={(item) => moveItem(item, 'list1')} listType="config" />
+                    </div>
+                </div>
+
+                <div className="mt-5 flex w-full max-w-4xl justify-between">
                     <div className="w-1/2 p-4 bg-white rounded">
-                        <h2 className="text-2xl font-medium mb-4">Lista 1</h2>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-2xl font-medium">Lista 1</h2>
+                            <TrashBin deleteItem={deleteItem} />
+                        </div>
                         <List items={list1} moveItem={(item) => moveItem(item, 'list1')} listType="list1" />
                     </div>
-
                     <div className="w-1/2 p-4 bg-white rounded ml-5">
-                        <h2 className="text-2xl font-medium mb-4">Lista 2</h2>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-2xl font-medium">Lista 2</h2>
+                            <TrashBin deleteItem={deleteItem} />
+                        </div>
                         <List items={list2} moveItem={(item) => moveItem(item, 'list2')} listType="list2" />
                     </div>
+
                 </div>
             </div>
         </DndProvider>
     );
 };
 
-const List: React.FC<{ items: ItemProps[], moveItem: (item: ItemProps, toList: 'list1' | 'list2') => void, listType: 'list1' | 'list2' }> = ({ items, moveItem, listType }) => {
+const List: React.FC<{ items: ItemProps[], moveItem: (item: ItemProps, toList: 'list1' | 'list2') => void, listType: 'config' | 'list1' | 'list2' }> = ({ items, moveItem, listType }) => {
     const [, drop] = useDrop({
         accept: 'ITEM',
         drop: (draggedItem: ItemProps) => {
-            moveItem(draggedItem, listType);
+            if (listType !== 'config') {
+                moveItem(draggedItem, listType);
+            }
         },
     });
 
@@ -93,7 +113,7 @@ const List: React.FC<{ items: ItemProps[], moveItem: (item: ItemProps, toList: '
     );
 };
 
-const ListItem: React.FC<{ item: ItemProps, moveItem: (item: ItemProps, toList: 'list1' | 'list2') => void, currentList: 'list1' | 'list2' }> = ({ item, moveItem, currentList }) => {
+const ListItem: React.FC<{ item: ItemProps, moveItem: (item: ItemProps, toList: 'list1' | 'list2') => void, currentList: 'config' | 'list1' | 'list2' }> = ({ item, moveItem, currentList }) => {
     const [, ref] = useDrag({
         type: 'ITEM',
         item,
@@ -107,6 +127,21 @@ const ListItem: React.FC<{ item: ItemProps, moveItem: (item: ItemProps, toList: 
     return (
         <div ref={ref} onClick={handleClick} className="p-2 mb-2 rounded bg-gray-200 cursor-pointer">
             {item.text}
+        </div>
+    );
+};
+
+const TrashBin: React.FC<{ deleteItem: (item: ItemProps) => void }> = ({ deleteItem }) => {
+    const [, drop] = useDrop({
+        accept: 'ITEM',
+        drop: (draggedItem: ItemProps) => {
+            deleteItem(draggedItem);
+        },
+    });
+
+    return (
+        <div ref={drop} className="p-2 bg-red-500 text-white rounded cursor-pointer">
+            <FaTrash />
         </div>
     );
 };
